@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#B8860B">
+    <title>🥐 Cooking Bakery</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            touch-action: none;
+        }
+        #gameContainer {
+            width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+        }
+        canvas { border-radius: 0; }
+        #loadingScreen {
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 1000; transition: opacity 0.5s;
+        }
+        #loadingScreen.hidden { opacity: 0; pointer-events: none; }
+        .loader-title {
+            font-size: 2.5rem; font-weight: 900;
+            color: white; text-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+        }
+        .loader-subtitle {
+            font-size: 1.2rem; color: #fff8e7; margin: 10px 0 30px;
+        }
+        .loader-bar-bg {
+            width: 260px; height: 20px;
+            background: rgba(0,0,0,0.3); border-radius: 10px;
+            overflow: hidden;
+        }
+        .loader-bar {
+            height: 100%; width: 0%; background: white;
+            border-radius: 10px; transition: width 0.3s;
+        }
+        .loader-text { margin-top: 15px; color: white; font-size: 0.9rem; }
+        .loader-emoji { font-size: 4rem; margin-bottom: 20px; animation: bounce 1s infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingScreen">
+        <div class="loader-emoji">🥐</div>
+        <div class="loader-title">COOKING BAKERY</div>
+        <div class="loader-subtitle">Boulangerie Française</div>
+        <div class="loader-bar-bg">
+            <div class="loader-bar" id="loaderBar"></div>
+        </div>
+        <div class="loader-text" id="loaderText">Chargement des assets...</div>
+    </div>
+    <div id="gameContainer"></div>
+
+<script>
+// ================================================================
+// 🥐 COOKING BAKERY - JEU COMPLET ISOMÉTRIQUE
+// Version: 1.0 | Moteur: PixiJS 7
+// ================================================================
+
+// ===== CONFIGURATION =====
+const CONFIG = {
+    width: 420,
+    height: 750,
+    bgColor: 0xFEF3E2
+};
+
+// ===== ASSETS URLs =====
+const ASSETS = {
+    products: 'https://i.ibb.co/7NNPP2PD/Chat-GPT-Image-21-fe-vr-2026-15-43-47.png',
+    effects: 'https://i.ibb.co/TBGgXcpt/Animation-de-fume-e-e-tincelles-et-pie-ces.png',
+    background: 'https://i.ibb.co/fdPp0gtX/Boulangerie-franc-aise-chaleureuse-et-accueillante.png',
+    customers: 'https://i.ibb.co/pjG1Kwvy/Personnages-en-file-d-attente-pour-la-boulangerie.png',
+    walkCycle: 'https://i.ibb.co/ZzqGk1gN/Se-quence-d-animation-de-marche.png',
+    uiPack: 'https://i.ibb.co/99g5sw7M/De-lices-et-personnages-dans-une-boulangerie.png'
+};
+
+// ===== DONNÉES JEU =====
+const PRODUCTS = {
+    baguette: { col: 0, row: 0, time: 1500, points: 15, name: 'Baguette' },
+    croissant: { col: 1, row: 0, time: 2000, points: 20, name: 'Croissant' },
+    painchoc: { col: 0, row: 1, time: 2500, points: 25, name: 'Pain Choco' },
+    brioche: { col: 1, row: 1, time: 3000, points: 30, name: 'Brioche' }
+};
+
+const LEVELS = [
+    { level: 1, name: "L'Ouverture", customers: 6, speed: 5000, maxQueue: 3, products: ['baguette'], goal: 70 },
+    { level: 2, name: "Premier Rush", customers: 8, speed: 4500, maxQueue: 3, products: ['baguette', 'croissant'], goal: 120 },
+    { level: 3, name: "Matinée Chargée", customers: 10, speed: 4000, maxQueue: 4, products: ['baguette', 'croissant', 'painchoc'], goal: 180 },
+    { level: 4, name: "L'Affluence", customers: 12, speed: 3500, maxQueue: 4, products: ['baguette', 'croissant', 'painchoc', 'brioche'], goal: 250 },
+    { level: 5, name: "Samedi Matin", customers: 15, speed: 3000, maxQueue: 5, products: ['baguette', 'croissant', 'painchoc', 'brioche'], goal: 320, locked: true },
+    { level: 6, name: "Dimanche Rush", customers: 18, speed: 2500, maxQueue: 5, products: ['baguette', 'croissant', 'painchoc', 'brioche'], goal: 400, locked: true }
+];
+
+// ===== VARIABLES GLOBALES =====
+let app, textures = {}, sounds = {};
+let gameState = {
+    screen: 'menu',
+    level: 0,
+    score: 0,
+    coins: 50,
+    served: 0,
+    missed: 0,
+    combo: 0,
+    stars: [0,0,0,0,0,0],
+    customers: [],
+    preparing: null,
+    prepProgress: 0,
+    ready: null,
+    spawned: 0
+};
+
+// Containers
+let menuContainer, gameContainer, resultContainer;
+let customersContainer, uiContainer, effectsContainer;
+let productButtons = [];
+
+// ================================================================
+// INITIALISATION
+// ================================================================
+
+async function init() {
+    app = new PIXI.Application({
+        width: CONFIG.width,
+        height: CONFIG.height,
+        backgroundColor: CONFIG.bgColor,
+        resolution: Math.min(window.devicePixelRatio || 1, 2),
+        autoDensity: true,
+        antialias: true
+    });
+    
+    document.getElementById('gameContainer').appendChild(app.view);
+    
+    window.addEventListener('resize', resize);
+    resize();
+    
+    await loadAssets();
+    
+    document.getElementById('loadingScreen').classList.add('hidden');
+    
+    showMenu();
+    app.ticker.add(gameLoop);
+}
+
+function resize() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const scale = Math.min(w / CONFIG.width, h / CONFIG.height);
+    app.view.style.width = `${CONFIG.width * scale}px`;
+    app.view.style.height = `${CONFIG.height * scale}px`;
+}
+
+async function loadAssets() {
+    const bar = document.getElementById('loaderBar');
+    const text = document.getElementById('loaderText');
+    
+    const assetList = Object.entries(ASSETS);
+    
+    for (let i = 0; i < assetList.length; i++) {
+        const [name, url] = assetList[i];
+        text.textContent = `Chargement: ${name}...`;
+        bar.style.width = `${((i + 1) / assetList.length) * 100}%`;
+        
+        try {
+            textures[name] = await PIXI.Assets.load(url);
+        } catch(e) {
+            console.warn(`Failed to load ${name}:`, e);
+        }
+    }
+    
+    // Découper les produits (grille 2x2)
+    if (textures.products) {
+        const base = textures.products.baseTexture;
+        const pw = base.width / 2, ph = base.height / 2;
+        const padding = 0.12; // 12% padding
+        
+        for (const [key, data] of Object.entries(PRODUCTS)) {
+            const rect = new PIXI.Rectangle(
+                data.col * pw + pw * padding,
+                data.row * ph + ph * padding,
+                pw * (1 - padding * 2),
+                ph * (1 - padding * 2)
+            );
+            textures[`product_${key}`] = new PIXI.Texture(base, rect);
+        }
+    }
+    
+    // Découper les effets (4 lignes x 8 colonnes)
+    if (textures.effects) {
+        const base = textures.effects.baseTexture;
+        const cols = 8, rows = 4;
+        const fw = base.width / cols, fh = base.height / rows;
+        
+        textures.smokeFrames = [];
+        textures.sparkleFrames = [];
+        textures.coinFrames = [];
+        
+        for (let i = 0; i < cols; i++) {
+            textures.smokeFrames.push(new PIXI.Texture(base, new PIXI.Rectangle(i * fw, 0, fw, fh)));
+            textures.sparkleFrames.push(new PIXI.Texture(base, new PIXI.Rectangle(i * fw, fh, fw, fh)));
+            textures.coinFrames.push(new PIXI.Texture(base, new PIXI.Rectangle(i * fw, fh * 2, fw, fh)));
+        }
+    }
+    
+    // Découper les clients (estimation 8 personnages en ligne)
+    if (textures.customers) {
+        const base = textures.customers.baseTexture;
+        const numCustomers = 8;
+        const cw = base.width / numCustomers;
+        
+        textures.customerSprites = [];
+        for (let i = 0; i < numCustomers; i++) {
+            textures.customerSprites.push(
+                new PIXI.Texture(base, new PIXI.Rectangle(i * cw, 0, cw, base.height))
+            );
+        }
+    }
+    
+    text.textContent = 'Prêt !';
+    await delay(300);
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ================================================================
+// ÉCRAN MENU
+// ================================================================
+
+function showMenu() {
+    gameState.screen = 'menu';
+    app.stage.removeChildren();
+    
+    menuContainer = new PIXI.Container();
+    
+    // Fond
+    const bg = new PIXI.Graphics();
+    bg.beginFill(0xFEF3E2);
+    bg.drawRect(0, 0, CONFIG.width, CONFIG.height);
+    bg.endFill();
+    menuContainer.addChild(bg);
+    
+    // Dégradé décoratif
+    const grad = new PIXI.Graphics();
+    grad.beginFill(0xF5AF19, 0.15);
+    grad.drawRect(0, 0, CONFIG.width, 180);
+    grad.endFill();
+    menuContainer.addChild(grad);
+    
+    // Logo/Titre
+    const logoBg = new PIXI.Graphics();
+    logoBg.beginFill(0xB8860B);
+    logoBg.lineStyle(4, 0x8B6914);
+    logoBg.drawRoundedRect(CONFIG.width/2 - 150, 25, 300, 90, 20);
+    menuContainer.addChild(logoBg);
+    
+    const title1 = createText('COOKING', { fontSize: 26, fill: 0xFFF8E7, fontWeight: 'bold' });
+    title1.anchor.set(0.5);
+    title1.position.set(CONFIG.width/2, 52);
+    menuContainer.addChild(title1);
+    
+    const title2 = createText('BAKERY 🥐', { fontSize: 34, fill: 0xFFFFFF, fontWeight: 'bold' });
+    title2.anchor.set(0.5);
+    title2.position.set(CONFIG.width/2, 88);
+    menuContainer.addChild(title2);
+    
+    // Affichage pièces
+    const coinBg = new PIXI.Graphics();
+    coinBg.beginFill(0xFFD700);
+    coinBg.lineStyle(2, 0xDAA520);
+    coinBg.drawRoundedRect(CONFIG.width/2 - 55, 125, 110, 38, 19);
+    menuContainer.addChild(coinBg);
+    
+    const coinText = createText(`🪙 ${gameState.coins}`, { fontSize: 22, fill: 0x8B4513, fontWeight: 'bold' });
+    coinText.anchor.set(0.5);
+    coinText.position.set(CONFIG.width/2, 144);
+    menuContainer.addChild(coinText);
+    
+    // Liste des niveaux
+    LEVELS.forEach((lvl, i) => {
+        const y = 185 + i * 72;
+        const btn = createLevelButton(lvl, i, y);
+        menuContainer.addChild(btn);
+    });
+    
+    // Bouton Premium
+    const premiumBtn = createPremiumButton();
+    premiumBtn.position.set(CONFIG.width/2, 630);
+    menuContainer.addChild(premiumBtn);
+    
+    // Mini déco en bas
+    if (textures.products) {
+        const deco = new PIXI.Sprite(textures.products);
+        deco.anchor.set(0.5);
+        deco.width = 200;
+        deco.height = 100;
+        deco.position.set(CONFIG.width/2, 700);
+        deco.alpha = 0.3;
+        menuContainer.addChild(deco);
+    }
+    
+    app.stage.addChild(menuContainer);
+}
+
+function createLevelButton(lvl, index, y) {
+    const btn = new PIXI.Container();
+    btn.position.set(CONFIG.width/2, y);
+    btn.eventMode = 'static';
+    btn.cursor = lvl.locked ? 'not-allowed' : 'pointer';
+    
+    // Fond
+    const bg = new PIXI.Graphics();
+    bg.beginFill(lvl.locked ? 0xD1D5DB : 0xFFFFFF);
+    bg.lineStyle(3, lvl.locked ? 0xAAAAAA : 0xE8A849);
+    bg.drawRoundedRect(-185, -28, 370, 56, 16);
+    btn.addChild(bg);
+    
+    // Numéro
+    const numBg = new PIXI.Graphics();
+    numBg.beginFill(lvl.locked ? 0x9CA3AF : 0xF59E0B);
+    numBg.drawRoundedRect(-170, -20, 48, 40, 10);
+    btn.addChild(numBg);
+    
+    const num = createText(lvl.locked ? '🔒' : `${lvl.level}`, {
+        fontSize: lvl.locked ? 22 : 26,
+        fill: 0xFFFFFF,
+        fontWeight: 'bold'
+    });
+    num.anchor.set(0.5);
+    num.position.set(-146, 0);
+    btn.addChild(num);
+    
+    // Nom + info
+    const name = createText(lvl.name, { fontSize: 17, fill: lvl.locked ? 0x9CA3AF : 0x333333, fontWeight: 'bold' });
+    name.anchor.set(0, 0.5);
+    name.position.set(-110, -7);
+    btn.addChild(name);
+    
+    const info = createText(`${lvl.customers} clients • Objectif: ${lvl.goal}`, { fontSize: 11, fill: 0x888888 });
+    info.anchor.set(0, 0.5);
+    info.position.set(-110, 12);
+    btn.addChild(info);
+    
+    // Étoiles
+    for (let s = 0; s < 3; s++) {
+        const star = createText(gameState.stars[index] > s ? '⭐' : '☆', {
+            fontSize: 18,
+            fill: gameState.stars[index] > s ? 0xFFD700 : 0xCCCCCC
+        });
+        star.anchor.set(0.5);
+        star.position.set(115 + s * 28, 0);
+        btn.addChild(star);
+    }
+    
+    // Interaction
+    if (!lvl.locked) {
+        btn.on('pointerdown', () => {
+            animatePress(btn, () => startGame(index));
+        });
+        btn.on('pointerover', () => { btn.scale.set(1.02); });
+        btn.on('pointerout', () => { btn.scale.set(1); });
+    }
+    
+    return btn;
+}
+
+function createPremiumButton() {
+    const btn = new PIXI.Container();
+    btn.eventMode = 'static';
+    btn.cursor = 'pointer';
+    
+    const bg = new PIXI.Graphics();
+    bg.beginFill(0x8B5CF6);
+    bg.lineStyle(3, 0x7C3AED);
+    bg.drawRoundedRect(-185, -28, 370, 56, 16);
+    btn.addChild(bg);
+    
+    const text = createText('🔓 Tout Débloquer', { fontSize: 18, fill: 0xFFFFFF, fontWeight: 'bold' });
+    text.anchor.set(0.5);
+    text.position.set(-30, 0);
+    btn.addChild(text);
+    
+    const price = createText('1€', { fontSize: 24, fill: 0xFFFFFF, fontWeight: 'bold' });
+    price.anchor.set(0.5);
+    price.position.set(130, 0);
+    btn.addChild(price);
+    
+    btn.on('pointerdown', () => {
+        animatePress(btn, () => {
+            // Ici intégrer Stripe
+            alert('💳 Intégration Stripe à ajouter !\n\nPour débloquer, ajoutez Stripe Checkout.');
+        });
+    });
+    
+    return btn;
+}
+
+// ================================================================
+// ÉCRAN DE JEU
+// ================================================================
+
+function startGame(levelIndex) {
+    gameState.screen = 'playing';
+    gameState.level = levelIndex;
+    gameState.score = 0;
+    gameState.served = 0;
+    gameState.missed = 0;
+    gameState.combo = 0;
+    gameState.customers = [];
+    gameState.preparing = null;
+    gameState.prepProgress = 0;
+    gameState.ready = null;
+    gameState.spawned = 0;
+    productButtons = [];
+    
+    app.stage.removeChildren();
+    gameContainer = new PIXI.Container();
+    
+    // === BACKGROUND ISOMÉTRIQUE ===
+    if (textures.background) {
+        const bg = new PIXI.Sprite(textures.background);
+        bg.anchor.set(0.5, 0);
+        bg.position.set(CONFIG.width / 2, 60);
+        
+        // Scale pour remplir la largeur
+        const scale = CONFIG.width / bg.texture.width * 1.15;
+        bg.scale.set(scale);
+        
+        gameContainer.addChild(bg);
+    } else {
+        // Fallback
+        const bg = new PIXI.Graphics();
+        bg.beginFill(0xFEF3E2);
+        bg.drawRect(0, 0, CONFIG.width, CONFIG.height);
+        gameContainer.addChild(bg);
+    }
+    
+    // === HEADER UI ===
+    const header = createGameHeader();
+    gameContainer.addChild(header);
+    
+    // === ZONE CLIENTS (isométrique) ===
+    customersContainer = new PIXI.Container();
+    customersContainer.position.set(0, 0);
+    customersContainer.sortableChildren = true; // Z-index dynamique !
+    gameContainer.addChild(customersContainer);
+    
+    // === ZONE EFFETS ===
+    effectsContainer = new PIXI.Container();
+    gameContainer.addChild(effectsContainer);
+    
+    // === ZONE PRÉPARATION ===
+    const prepZone = createPrepZone();
+    gameContainer.addChild(prepZone);
+    
+    app.stage.addChild(gameContainer);
+    
+    // Démarrer spawn
+    setTimeout(spawnCustomer, 800);
+}
+
+function createGameHeader() {
+    const header = new PIXI.Container();
+    
+    // Fond semi-transparent
+    const bg = new PIXI.Graphics();
+    bg.beginFill(0xB8860B, 0.95);
+    bg.drawRect(0, 0, CONFIG.width, 60);
+    header.addChild(bg);
+    
+    // Bouton retour
+    const backBtn = new PIXI.Container();
+    backBtn.position.set(30, 30);
+    backBtn.eventMode = 'static';
+    backBtn.cursor = 'pointer';
+    
+    const backBg = new PIXI.Graphics();
+    backBg.beginFill(0xFFFFFF, 0.2);
+    backBg.drawRoundedRect(-20, -18, 40, 36, 10);
+    backBtn.addChild(backBg);
+    
+    const backIcon = createText('←', { fontSize: 26, fill: 0xFFFFFF });
+    backIcon.anchor.set(0.5);
+    backBtn.addChild(backIcon);
+    
+    backBtn.on('pointerdown', () => showMenu());
+    header.addChild(backBtn);
+    
+    // Titre niveau
+    const lvl = LEVELS[gameState.level];
+    const title = createText(lvl.name, { fontSize: 18, fill: 0xFFFFFF, fontWeight: 'bold' });
+    title.anchor.set(0.5);
+    title.position.set(CONFIG.width/2, 20);
+    header.addChild(title);
+    
+    // Score
+    const scoreLabel = createText('0', { fontSize: 28, fill: 0xFFFFFF, fontWeight: 'bold' });
+    scoreLabel.anchor.set(1, 0.5);
+    scoreLabel.position.set(CONFIG.width - 20, 20);
+    scoreLabel.name = 'scoreLabel';
+    header.addChild(scoreLabel);
+    
+    // Info clients
+    const clientInfo = createText(`0/${lvl.customers}`, { fontSize: 12, fill: 0xFFF8E7 });
+    clientInfo.anchor.set(0.5);
+    clientInfo.position.set(CONFIG.width/2, 42);
+    clientInfo.name = 'clientInfo';
+    header.addChild(clientInfo);
+    
+    // Barre objectif
+    const progressBg = new PIXI.Graphics();
+    progressBg.beginFill(0xFFFFFF, 0.3);
+    progressBg.drawRoundedRect(15, 52, CONFIG.width - 30, 6, 3);
+    header.addChild(progressBg);
+    
+    const progressBar = new PIXI.Graphics();
+    progressBar.name = 'progressBar';
+    header.addChild(progressBar);
+    
+    header.name = 'header';
+    return header;
+}
+
+function createPrepZone() {
+    const zone = new PIXI.Container();
+    zone.position.set(0, CONFIG.height - 180);
+    
+    // Fond
+    const bg = new PIXI.Graphics();
+    bg.beginFill(0x3D3D3D);
+    bg.drawRoundedRect(0, 0, CONFIG.width, 180, 25);
+    bg.beginFill(0x4A4A4A);
+    bg.drawRoundedRect(0, 0, CONFIG.width, 20, 25);
+    zone.addChild(bg);
+    
+    // Status
+    const status = createText('👆 Sélectionne un produit', { fontSize: 14, fill: 0xAAAAAA });
+    status.anchor.set(0.5);
+    status.position.set(CONFIG.width/2, 35);
+    status.name = 'status';
+    zone.addChild(status);
+    
+    // Boutons produits
+    const lvl = LEVELS[gameState.level];
+    const prods = lvl.products;
+    const btnW = 80, gap = 12;
+    const totalW = prods.length * btnW + (prods.length - 1) * gap;
+    const startX = (CONFIG.width - totalW) / 2;
+    
+    prods.forEach((pid, i) => {
+        const btn = createProductButton(pid, i);
+        btn.position.set(startX + i * (btnW + gap) + btnW/2, 110);
+        zone.addChild(btn);
+        productButtons.push({ container: btn, id: pid });
+    });
+    
+    zone.name = 'prepZone';
+    return zone;
+}
+
+function createProductButton(productId, index) {
+    const data = PRODUCTS[productId];
+    const btn = new PIXI.Container();
+    btn.eventMode = 'static';
+    btn.cursor = 'pointer';
+    btn.name = productId;
+    
+    // Fond
+    const bg = new PIXI.Graphics();
+    bg.beginFill(0xFFFFFF);
+    bg.lineStyle(3, 0xE8A849);
+    bg.drawRoundedRect(-38, -55, 76, 110, 15);
+    bg.name = 'bg';
+    btn.addChild(bg);
+    
+    // Sprite produit
+    const tex = textures[`product_${productId}`];
+    if (tex) {
+        const sprite = new PIXI.Sprite(tex);
+        sprite.anchor.set(0.5);
+        sprite.width = 55;
+        sprite.height = 55;
+        sprite.y = -15;
+        btn.addChild(sprite);
+    }
+    
+    // Nom
+    const name = createText(data.name, { fontSize: 10, fill: 0x333333, fontWeight: 'bold' });
+    name.anchor.set(0.5);
+    name.y = 25;
+    btn.addChild(name);
+    
+    // Points
+    const pts = createText(`+${data.points}`, { fontSize: 11, fill: 0xF59E0B, fontWeight: 'bold' });
+    pts.anchor.set(0.5);
+    pts.y = 40;
+    btn.addChild(pts);
+    
+    // Progress cercle (caché)
+    const progress = new PIXI.Graphics();
+    progress.name = 'progress';
+    progress.visible = false;
+    btn.addChild(progress);
+    
+    // Badge prêt (caché)
+    const badge = new PIXI.Graphics();
+    badge.beginFill(0x22C55E);
+    badge.lineStyle(2, 0xFFFFFF);
+    badge.drawCircle(28, -45, 14);
+    badge.name = 'badge';
+    badge.visible = false;
+    btn.addChild(badge);
+    
+    const check = createText('✓', { fontSize: 16, fill: 0xFFFFFF, fontWeight: 'bold' });
+    check.anchor.set(0.5);
+    check.position.set(28, -45);
+    check.name = 'check';
+    check.visible = false;
+    btn.addChild(check);
+    
+    btn.on('pointerdown', () => onProductClick(productId));
+    
+    return btn;
+}
+
+function onProductClick(productId) {
+    if (gameState.preparing && gameState.preparing !== productId) return;
+    
+    if (gameState.ready === productId) {
+        serveCustomer(productId);
+    } else if (!gameState.preparing) {
+        startPreparation(productId);
+    }
+}
+
+function startPreparation(productId) {
+    gameState.preparing = productId;
+    gameState.prepProgress = 0;
+    
+    // Update status
+    const prepZone = gameContainer.getChildByName('prepZone');
+    const status = prepZone.getChildByName('status');
+    status.text = '⏳ Cuisson en cours...';
+    status.style.fill = 0xFBBF24;
+    
+    // Highlight bouton
+    const btn = productButtons.find(b => b.id === productId);
+    if (btn) {
+        btn.container.getChildByName('bg').tint = 0xFFF3CD;
+    }
+    
+    // Ajouter fumée sur le décor
+    spawnSmoke();
+}
+
+function completePreparation() {
+    const productId = gameState.preparing;
+    gameState.ready = productId;
+    gameState.preparing = null;
+    gameState.prepProgress = 0;
+    
+    // Update status
+    const prepZone = gameContainer.getChildByName('prepZone');
+    const status = prepZone.getChildByName('status');
+    status.text = '✓ PRÊT ! Clique pour servir';
+    status.style.fill = 0x22C55E;
+    
+    // Show badge
+    const btn = productButtons.find(b => b.id === productId);
+    if (btn) {
+        btn.container.getChildByName('bg').tint = 0xBBFFBB;
+        btn.container.getChildByName('badge').visible = true;
+        btn.container.getChildByName('check').visible = true;
+    }
+}
+
+function serveCustomer(productId) {
+    const idx = gameState.customers.findIndex(c => c.order === productId && !c.served);
+    
+    if (idx !== -1) {
+        const customer = gameState.customers[idx];
+        const data = PRODUCTS[productId];
+        
+        // Points
+        const bonus = Math.floor(customer.patience / 4);
+        const comboBonus = gameState.combo * 10;
+        const total = data.points + bonus + comboBonus;
+        
+        gameState.score += total;
+        gameState.served++;
+        gameState.combo++;
+        customer.served = true;
+        
+        // Effets
+        spawnFloatingText(`+${total}`, customer.sprite.x, customer.sprite.y - 50, 0x22C55E);
+        spawnSparkle(customer.sprite.x, customer.sprite.y - 30);
+        spawnCoins(customer.sprite.x, customer.sprite.y);
+        
+        if (gameState.combo >= 3) {
+            showComboText();
+        }
+        
+        // Animation sortie client
+        animateCustomerLeave(customer);
+        
+        updateUI();
+    }
+    
+    // Reset bouton
+    gameState.ready = null;
+    const btn = productButtons.find(b => b.id === productId);
+    if (btn) {
+        btn.container.getChildByName('bg').tint = 0xFFFFFF;
+        btn.container.getChildByName('badge').visible = false;
+        btn.container.getChildByName('check').visible = false;
+    }
+    
+    // Reset status
+    const prepZone = gameContainer.getChildByName('prepZone');
+    const status = prepZone.getChildByName('status');
+    status.text = '👆 Sélectionne un produit';
+    status.style.fill = 0xAAAAAA;
+}
+
+// ================================================================
+// CLIENTS
+// ================================================================
+
+function spawnCustomer() {
+    if (gameState.screen !== 'playing') return;
+    
+    const lvl = LEVELS[gameState.level];
+    if (gameState.spawned >= lvl.customers) return;
+    
+    const activeCount = gameState.customers.filter(c => !c.served).length;
+    if (activeCount >= lvl.maxQueue) {
+        setTimeout(spawnCustomer, 500);
+        return;
+    }
+    
+    // Choisir produit aléatoire
+    const prods = lvl.products;
+    const order = prods[Math.floor(Math.random() * prods.length)];
+    
+    // Type visuel
+    const type = Math.floor(Math.random() * (textures.customerSprites?.length || 1));
+    
+    // Position isométrique
+    const queueIndex = activeCount;
+    const startX = CONFIG.width + 80;
+    const targetX = 280 - queueIndex * 50; // File d'attente isométrique
+    const targetY = 350 + queueIndex * 25; // Plus bas = plus proche
+    
+    const customer = {
+        id: Date.now(),
+        order,
+        patience: 100,
+        served: false,
+        type,
+        sprite: null
+    };
+    
+    // Créer sprite
+    const sprite = createCustomerSprite(customer, type);
+    sprite.x = startX;
+    sprite.y = targetY;
+    sprite.zIndex = Math.floor(targetY); // Z-index dynamique
+    customer.sprite = sprite;
+    customersContainer.addChild(sprite);
+    
+    gameState.customers.push(customer);
+    gameState.spawned++;
+    
+    // Animation entrée
+    animateCustomerEnter(sprite, targetX, targetY);
+    
+    // Prochain client
+    setTimeout(spawnCustomer, lvl.speed);
+}
+
+function createCustomerSprite(customer, type) {
+    const container = new PIXI.Container();
+    
+    // Sprite personnage
+    const tex = textures.customerSprites?.[type] || null;
+    if (tex) {
+        const sprite = new PIXI.Sprite(tex);
+        sprite.anchor.set(0.5, 1);
+        sprite.scale.set(0.5);
+        container.addChild(sprite);
+    } else {
+        // Fallback cercle
+        const placeholder = new PIXI.Graphics();
+        placeholder.beginFill(0x4A90D9);
+        placeholder.drawCircle(0, -30, 25);
+        placeholder.beginFill(0xFFCCB3);
+        placeholder.drawCircle(0, -50, 15);
+        container.addChild(placeholder);
+    }
+    
+    // Bulle commande
+    const bubble = new PIXI.Container();
+    bubble.position.set(0, -100);
+    
+    const bubbleBg = new PIXI.Graphics();
+    bubbleBg.beginFill(0xFFFFFF);
+    bubbleBg.lineStyle(2, 0xE8A849);
+    bubbleBg.drawRoundedRect(-28, -28, 56, 56, 12);
+    bubble.addChild(bubbleBg);
+    
+    // Triangle bulle
+    const tri = new PIXI.Graphics();
+    tri.beginFill(0xFFFFFF);
+    tri.lineStyle(2, 0xE8A849);
+    tri.moveTo(-8, 26);
+    tri.lineTo(0, 38);
+    tri.lineTo(8, 26);
+    bubble.addChild(tri);
+    
+    // Produit dans bulle
+    const prodTex = textures[`product_${customer.order}`];
+    if (prodTex) {
+        const prodSprite = new PIXI.Sprite(prodTex);
+        prodSprite.anchor.set(0.5);
+        prodSprite.width = 40;
+        prodSprite.height = 40;
+        bubble.addChild(prodSprite);
+    }
+    
+    container.addChild(bubble);
+    container.bubble = bubble;
+    
+    // Barre patience
+    const barBg = new PIXI.Graphics();
+    barBg.beginFill(0x333333);
+    barBg.drawRoundedRect(-25, 5, 50, 8, 4);
+    container.addChild(barBg);
+    
+    const barFill = new PIXI.Graphics();
+    barFill.name = 'patienceBar';
+    container.addChild(barFill);
+    
+    return container;
+}
+
+function animateCustomerEnter(sprite, targetX, targetY) {
+    const startX = sprite.x;
+    const duration = 600;
+    const startTime = Date.now();
+    
+    const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const t = Math.min(elapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        
+        sprite.x = startX + (targetX - startX) * ease;
+        sprite.y = targetY - Math.sin(t * Math.PI) * 15;
+        
+        if (t < 1) requestAnimationFrame(animate);
+    };
+    animate();
+}
+
+function animateCustomerLeave(customer) {
+    const sprite = customer.sprite;
+    const duration = 400;
+    const startTime = Date.now();
+    const startX = sprite.x;
+    
+    const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const t = Math.min(elapsed / duration, 1);
+        
+        sprite.x = startX - 100 * t;
+        sprite.alpha = 1 - t;
+        sprite.scale.set(1 - t * 0.3);
+        
+        if (t < 1) {
+            requestAnimationFrame(animate);
+        } else {
+            customersContainer.removeChild(sprite);
+            repositionQueue();
+        }
+    };
+    animate();
+}
+
+function repositionQueue() {
+    const active = gameState.customers.filter(c => !c.served);
+    active.forEach((c, i) => {
+        const targetX = 280 - i * 50;
+        const targetY = 350 + i * 25;
+        
+        if (c.sprite) {
+            const startX = c.sprite.x, startY = c.sprite.y;
+            const duration = 300;
+            const startTime = Date.now();
+            
+            const animate = () => {
+                const t = Math.min((Date.now() - startTime) / duration, 1);
+                c.sprite.x = startX + (targetX - startX) * t;
+                c.sprite.y = startY + (targetY - startY) * t;
+                c.sprite.zIndex = Math.floor(c.sprite.y);
+                if (t < 1) requestAnimationFrame(animate);
+            };
+            animate();
+        }
+    });
+}
+
+// ================================================================
+// EFFETS VISUELS
+// ================================================================
+
+function spawnSmoke() {
+    if (!textures.smokeFrames?.length) return;
+    
+    const smoke = new PIXI.AnimatedSprite(textures.smokeFrames);
+    smoke.anchor.set(0.5);
+    smoke.position.set(320, 250); // Position du four
+    smoke.scale.set(0.4);
+    smoke.animationSpeed = 0.15;
+    smoke.loop = false;
+    smoke.play();
+    smoke.onComplete = () => effectsContainer.removeChild(smoke);
+    effectsContainer.addChild(smoke);
+}
+
+function spawnSparkle(x, y) {
+    if (!textures.sparkleFrames?.length) return;
+    
+    const sparkle = new PIXI.AnimatedSprite(textures.sparkleFrames);
+    sparkle.anchor.set(0.5);
+    sparkle.position.set(x, y);
+    sparkle.scale.set(0.5);
+    sparkle.animationSpeed = 0.2;
+    sparkle.loop = false;
+    sparkle.play();
+    sparkle.onComplete = () => effectsContainer.removeChild(sparkle);
+    effectsContainer.addChild(sparkle);
+}
+
+function spawnCoins(x, y) {
+    if (!textures.coinFrames?.length) return;
+    
+    for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+            const coin = new PIXI.AnimatedSprite(textures.coinFrames);
+            coin.anchor.set(0.5);
+            coin.position.set(x + (Math.random() - 0.5) * 40, y);
+            coin.scale.set(0.3);
+            coin.animationSpeed = 0.3;
+            coin.play();
+            effectsContainer.addChild(coin);
+            
+            // Animation montée
+            const startY = coin.y;
+            const duration = 800;
+            const startTime = Date.now();
+            
+            const animate = () => {
+                const t = Math.min((Date.now() - startTime) / duration, 1);
+                coin.y = startY - 80 * t;
+                coin.alpha = 1 - t * 0.8;
+                if (t < 1) requestAnimationFrame(animate);
+                else effectsContainer.removeChild(coin);
+            };
+            animate();
+        }, i * 100);
+    }
+}
+
+function spawnFloatingText(text, x, y, color) {
+    const txt = createText(text, {
+        fontSize: 30,
+        fill: color,
+        fontWeight: 'bold',
+        stroke: 0xFFFFFF,
+        strokeThickness: 4
+    });
+    txt.anchor.set(0.5);
+    txt.position.set(x, y);
+    effectsContainer.addChild(txt);
+    
+    const startY = y;
+    const duration = 1000;
+    const startTime = Date.now();
+    
+    const animate = () => {
+        const t = Math.min((Date.now() - startTime) / duration, 1);
+        txt.y = startY - 60 * t;
+        txt.alpha = 1 - t;
+        txt.scale.set(1 + t * 0.3);
+        if (t < 1) requestAnimationFrame(animate);
+        else effectsContainer.removeChild(txt);
+    };
+    animate();
+}
+
+function showComboText() {
+    const combo = createText(`🔥 COMBO x${gameState.combo}!`, {
+        fontSize: 28,
+        fill: 0xFF6B35,
+        fontWeight: 'bold',
+        stroke: 0xFFFFFF,
+        strokeThickness: 5
+    });
+    combo.anchor.set(0.5);
+    combo.position.set(CONFIG.width/2, 150);
+    effectsContainer.addChild(combo);
+    
+    const duration = 1200;
+    const startTime = Date.now();
+    
+    const animate = () => {
+        const t = Math.min((Date.now() - startTime) / duration, 1);
+        combo.scale.set(1 + Math.sin(t * Math.PI * 4) * 0.1);
+        if (t > 0.7) combo.alpha = 1 - (t - 0.7) / 0.3;
+        if (t < 1) requestAnimationFrame(animate);
+        else effectsContainer.removeChild(combo);
+    };
+    animate();
+}
+
+// ================================================================
+// GAME LOOP
+// ================================================================
+
+function gameLoop(delta) {
+    if (gameState.screen !== 'playing') return;
+    
+    const lvl = LEVELS[gameState.level];
+    
+    // Update patience
+    gameState.customers.forEach(c => {
+        if (c.served) return;
+        
+        c.patience -= 0.12 * delta;
+        
+        // Update barre
+        if (c.sprite) {
+            const bar = c.sprite.getChildByName('patienceBar');
+            if (bar) {
+                bar.clear();
+                const color = c.patience > 60 ? 0x22C55E : c.patience > 30 ? 0xFBBF24 : 0xEF4444;
+                bar.beginFill(color);
+                bar.drawRoundedRect(-25, 5, (c.patience / 100) * 50, 8, 4);
+            }
+            
+            // Shake si impatient
+            if (c.patience < 25 && c.sprite.bubble) {
+                c.sprite.bubble.x = Math.sin(Date.now() / 50) * 3;
+            }
+        }
+        
+        // Client perdu
+        if (c.patience <= 0) {
+            c.served = true;
+            gameState.missed++;
+            gameState.combo = 0;
+            
+            spawnFloatingText('😠', c.sprite.x, c.sprite.y - 60, 0xEF4444);
+            
+            if (c.sprite) {
+                const sprite = c.sprite;
+                const duration = 500;
+                const startTime = Date.now();
+                
+                const animate = () => {
+                    const t = Math.min((Date.now() - startTime) / duration, 1);
+                    sprite.alpha = 1 - t;
+                    sprite.y -= 2;
+                    if (t < 1) requestAnimationFrame(animate);
+                    else {
+                        customersContainer.removeChild(sprite);
+                        repositionQueue();
+                    }
+                };
+                animate();
+            }
+            
+            updateUI();
+        }
+    });
+    
+    // Update préparation
+    if (gameState.preparing) {
+        const data = PRODUCTS[gameState.preparing];
+        gameState.prepProgress += (delta * 16) / data.time;
+        
+        // Update cercle progress
+        const btn = productButtons.find(b => b.id === gameState.preparing);
+        if (btn) {
+            const prog = btn.container.getChildByName('progress');
+            prog.visible = true;
+            prog.clear();
+            prog.lineStyle(4, 0xF59E0B);
+            prog.arc(0, -15, 35, -Math.PI/2, -Math.PI/2 + Math.PI * 2 * gameState.prepProgress);
+        }
+        
+        if (gameState.prepProgress >= 1) {
+            // Hide progress
+            if (btn) btn.container.getChildByName('progress').visible = false;
+            completePreparation();
+        }
+    }
+    
+    // Check fin niveau
+    if (gameState.served + gameState.missed >= lvl.customers) {
+        endGame();
+    }
+}
+
+function updateUI() {
+    const header = gameContainer.getChildByName('header');
+    if (!header) return;
+    
+    const lvl = LEVELS[gameState.level];
+    
+    // Score
+    const score = header.getChildByName('scoreLabel');
+    if (score) score.text = gameState.score.toString();
+    
+    // Info clients
+    const info = header.getChildByName('clientInfo');
+    if (info) info.text = `${gameState.served}/${lvl.customers}`;
+    
+    // Barre progression
+    const bar = header.getChildByName('progressBar');
+    if (bar) {
+        const progress = Math.min(gameState.score / lvl.goal, 1);
+        bar.clear();
+        bar.beginFill(progress >= 1 ? 0x22C55E : 0x60A5FA);
+        bar.drawRoundedRect(15, 52, (CONFIG.width - 30) * progress, 6, 3);
+    }
+}
+
+// ================================================================
+// RÉSULTAT
+// ================================================================
+
+function endGame() {
+    gameState.screen = 'result';
+    
+    const lvl = LEVELS[gameState.level];
+    const stars = gameState.missed === 0 ? 3 : gameState.missed <= 2 ? 2 : gameState.missed <= 3 ? 1 : 0;
+    const success = stars >= 1 && gameState.score >= lvl.goal;
+    
+    gameState.stars[gameState.level] = Math.max(gameState.stars[gameState.level], stars);
+    
+    const earned = Math.floor(gameState.score / 8) + stars * 15;
+    gameState.coins += earned;
+    
+    setTimeout(() => showResult(success, stars, earned), 600);
+}
+
+function showResult(success, stars, earned) {
+    app.stage.removeChildren();
+    resultContainer = new PIXI.Container();
+    
+    // Fond
+    const bg = new PIXI.Graphics();
+    bg.beginFill(success ? 0xF0FDF4 : 0xFEF2F2);
+    bg.drawRect(0, 0, CONFIG.width, CONFIG.height);
+    resultContainer.addChild(bg);
+    
+    // Icône
+    const icon = createText(success ? '🎉' : '😅', { fontSize: 80 });
+    icon.anchor.set(0.5);
+    icon.position.set(CONFIG.width/2, 120);
+    resultContainer.addChild(icon);
+    
+    // Titre
+    const title = createText(success ? 'Bravo Boulanger !' : 'Réessaie !', {
+        fontSize: 32, fill: success ? 0x22C55E : 0xEF4444, fontWeight: 'bold'
+    });
+    title.anchor.set(0.5);
+    title.position.set(CONFIG.width/2, 200);
+    resultContainer.addChild(title);
+    
+    // Étoiles
+    for (let i = 0; i < 3; i++) {
+        const star = createText(i < stars ? '⭐' : '☆', { fontSize: 50, fill: i < stars ? 0xFFD700 : 0xCCCCCC });
+        star.anchor.set(0.5);
+        star.position.set(CONFIG.width/2 - 70 + i * 70, 270);
+        resultContainer.addChild(star);
+        
+        // Animation
+        if (i < stars) {
+            star.scale.set(0);
+            setTimeout(() => {
+                const animate = () => {
+                    star.scale.x += 0.1;
+                    star.scale.y += 0.1;
+                    if (star.scale.x < 1) requestAnimationFrame(animate);
+                    else star.scale.set(1);
+                };
+                animate();
+            }, i * 200);
+        }
+    }
+    
+    // Stats
+    const lvl = LEVELS[gameState.level];
+    const statsBox = new PIXI.Graphics();
+    statsBox.beginFill(0xFFFFFF);
+    statsBox.lineStyle(2, 0xE5E7EB);
+    statsBox.drawRoundedRect(CONFIG.width/2 - 150, 320, 300, 140, 15);
+    resultContainer.addChild(statsBox);
+    
+    const stats = [
+        [`Score`, `${gameState.score} / ${lvl.goal}`],
+        [`Servis`, `${gameState.served} ✓`],
+        [`Perdus`, `${gameState.missed} ✗`],
+        [`Pièces`, `+${earned} 🪙`]
+    ];
+    
+    stats.forEach(([label, value], i) => {
+        const lbl = createText(label, { fontSize: 16, fill: 0x888888 });
+        lbl.anchor.set(0, 0.5);
+        lbl.position.set(CONFIG.width/2 - 130, 350 + i * 28);
+        resultContainer.addChild(lbl);
+        
+        const val = createText(value, { fontSize: 16, fill: 0x333333, fontWeight: 'bold' });
+        val.anchor.set(1, 0.5);
+        val.position.set(CONFIG.width/2 + 130, 350 + i * 28);
+        resultContainer.addChild(val);
+    });
+    
+    // Boutons
+    const replayBtn = createActionButton('Rejouer 🔄', 0xF59E0B, () => startGame(gameState.level));
+    replayBtn.position.set(CONFIG.width/2, 500);
+    resultContainer.addChild(replayBtn);
+    
+    if (success && gameState.level < LEVELS.length - 1 && !LEVELS[gameState.level + 1].locked) {
+        const nextBtn = createActionButton('Niveau suivant →', 0x22C55E, () => startGame(gameState.level + 1));
+        nextBtn.position.set(CONFIG.width/2, 565);
+        resultContainer.addChild(nextBtn);
+    }
+    
+    const menuBtn = createActionButton('Menu', 0x6B7280, showMenu);
+    menuBtn.position.set(CONFIG.width/2, success && gameState.level < 5 ? 630 : 565);
+    resultContainer.addChild(menuBtn);
+    
+    app.stage.addChild(resultContainer);
+}
+
+function createActionButton(label, color, onClick) {
+    const btn = new PIXI.Container();
+    btn.eventMode = 'static';
+    btn.cursor = 'pointer';
+    
+    const bg = new PIXI.Graphics();
+    bg.beginFill(color);
+    bg.drawRoundedRect(-150, -28, 300, 56, 15);
+    btn.addChild(bg);
+    
+    const text = createText(label, { fontSize: 20, fill: 0xFFFFFF, fontWeight: 'bold' });
+    text.anchor.set(0.5);
+    btn.addChild(text);
+    
+    btn.on('pointerdown', () => animatePress(btn, onClick));
+    btn.on('pointerover', () => btn.scale.set(1.03));
+    btn.on('pointerout', () => btn.scale.set(1));
+    
+    return btn;
+}
+
+// ================================================================
+// UTILITAIRES
+// ================================================================
+
+function createText(content, style) {
+    const defaultStyle = {
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: 16,
+        fill: 0x333333
+    };
+    return new PIXI.Text(content, { ...defaultStyle, ...style });
+}
+
+function animatePress(obj, callback) {
+    obj.scale.set(0.95);
+    setTimeout(() => {
+        obj.scale.set(1);
+        callback();
+    }, 100);
+}
+
+// ================================================================
+// LANCEMENT
+// ================================================================
+
+window.addEventListener('load', init);
+</script>
+</body>
+</html>
