@@ -1,0 +1,1326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.3">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000; min-height: 14.0px}
+    span.s1 {font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;html lang="fr"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;head&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="mobile-web-app-capable" content="yes"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="theme-color" content="#B8860B"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;title&gt;🥐 Cooking Bakery&lt;/title&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;style&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>* { margin: 0; padding: 0; box-sizing: border-box; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>html, body {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 100%; height: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>overflow: hidden;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: 'Segoe UI', system-ui, sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>touch-action: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#gameContainer {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 100%; height: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex; justify-content: center; align-items: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>canvas { border-radius: 0; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#loadingScreen {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: fixed; inset: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex; flex-direction: column;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: center; align-items: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>z-index: 1000; transition: opacity 0.5s;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#loadingScreen.hidden { opacity: 0; pointer-events: none; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.loader-title {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 2.5rem; font-weight: 900;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: white; text-shadow: 3px 3px 0 rgba(0,0,0,0.3);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.loader-subtitle {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 1.2rem; color: #fff8e7; margin: 10px 0 30px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.loader-bar-bg {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 260px; height: 20px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: rgba(0,0,0,0.3); border-radius: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>overflow: hidden;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.loader-bar {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 100%; width: 0%; background: white;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 10px; transition: width 0.3s;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.loader-text { margin-top: 15px; color: white; font-size: 0.9rem; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.loader-emoji { font-size: 4rem; margin-bottom: 20px; animation: bounce 1s infinite; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>@keyframes bounce {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>0%, 100% { transform: translateY(0); }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>50% { transform: translateY(-15px); }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
+<p class="p1"><span class="s1">&lt;body&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="loadingScreen"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="loader-emoji"&gt;🥐&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="loader-title"&gt;COOKING BAKERY&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="loader-subtitle"&gt;Boulangerie Française&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="loader-bar-bg"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="loader-bar" id="loaderBar"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="loader-text" id="loaderText"&gt;Chargement des assets...&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="gameContainer"&gt;&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">&lt;script&gt;</span></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p1"><span class="s1">// 🥐 COOKING BAKERY - JEU COMPLET ISOMÉTRIQUE</span></p>
+<p class="p1"><span class="s1">// Version: 1.0 | Moteur: PixiJS 7</span></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ===== CONFIGURATION =====</span></p>
+<p class="p1"><span class="s1">const CONFIG = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>width: 420,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>height: 750,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bgColor: 0xFEF3E2</span></p>
+<p class="p1"><span class="s1">};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ===== ASSETS URLs =====</span></p>
+<p class="p1"><span class="s1">const ASSETS = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>products: 'https://i.ibb.co/7NNPP2PD/Chat-GPT-Image-21-fe-vr-2026-15-43-47.png',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>effects: 'https://i.ibb.co/TBGgXcpt/Animation-de-fume-e-e-tincelles-et-pie-ces.png',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>background: 'https://i.ibb.co/fdPp0gtX/Boulangerie-franc-aise-chaleureuse-et-accueillante.png',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>customers: 'https://i.ibb.co/pjG1Kwvy/Personnages-en-file-d-attente-pour-la-boulangerie.png',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>walkCycle: 'https://i.ibb.co/ZzqGk1gN/Se-quence-d-animation-de-marche.png',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>uiPack: 'https://i.ibb.co/99g5sw7M/De-lices-et-personnages-dans-une-boulangerie.png'</span></p>
+<p class="p1"><span class="s1">};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ===== DONNÉES JEU =====</span></p>
+<p class="p1"><span class="s1">const PRODUCTS = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>baguette: { col: 0, row: 0, time: 1500, points: 15, name: 'Baguette' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>croissant: { col: 1, row: 0, time: 2000, points: 20, name: 'Croissant' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>painchoc: { col: 0, row: 1, time: 2500, points: 25, name: 'Pain Choco' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>brioche: { col: 1, row: 1, time: 3000, points: 30, name: 'Brioche' }</span></p>
+<p class="p1"><span class="s1">};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">const LEVELS = [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>{ level: 1, name: "L'Ouverture", customers: 6, speed: 5000, maxQueue: 3, products: ['baguette'], goal: 70 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>{ level: 2, name: "Premier Rush", customers: 8, speed: 4500, maxQueue: 3, products: ['baguette', 'croissant'], goal: 120 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>{ level: 3, name: "Matinée Chargée", customers: 10, speed: 4000, maxQueue: 4, products: ['baguette', 'croissant', 'painchoc'], goal: 180 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>{ level: 4, name: "L'Affluence", customers: 12, speed: 3500, maxQueue: 4, products: ['baguette', 'croissant', 'painchoc', 'brioche'], goal: 250 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>{ level: 5, name: "Samedi Matin", customers: 15, speed: 3000, maxQueue: 5, products: ['baguette', 'croissant', 'painchoc', 'brioche'], goal: 320, locked: true },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>{ level: 6, name: "Dimanche Rush", customers: 18, speed: 2500, maxQueue: 5, products: ['baguette', 'croissant', 'painchoc', 'brioche'], goal: 400, locked: true }</span></p>
+<p class="p1"><span class="s1">];</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ===== VARIABLES GLOBALES =====</span></p>
+<p class="p1"><span class="s1">let app, textures = {}, sounds = {};</span></p>
+<p class="p1"><span class="s1">let gameState = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>screen: 'menu',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>level: 0,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>score: 0,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>coins: 50,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>served: 0,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>missed: 0,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>combo: 0,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>stars: [0,0,0,0,0,0],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>customers: [],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>preparing: null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>prepProgress: 0,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>ready: null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>spawned: 0</span></p>
+<p class="p1"><span class="s1">};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// Containers</span></p>
+<p class="p1"><span class="s1">let menuContainer, gameContainer, resultContainer;</span></p>
+<p class="p1"><span class="s1">let customersContainer, uiContainer, effectsContainer;</span></p>
+<p class="p1"><span class="s1">let productButtons = [];</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p1"><span class="s1">// INITIALISATION</span></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">async function init() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>app = new PIXI.Application({</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>width: CONFIG.width,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>height: CONFIG.height,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>backgroundColor: CONFIG.bgColor,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>resolution: Math.min(window.devicePixelRatio || 1, 2),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>autoDensity: true,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>antialias: true</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('gameContainer').appendChild(app.view);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>window.addEventListener('resize', resize);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>resize();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>await loadAssets();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('loadingScreen').classList.add('hidden');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>showMenu();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>app.ticker.add(gameLoop);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function resize() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const w = window.innerWidth, h = window.innerHeight;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const scale = Math.min(w / CONFIG.width, h / CONFIG.height);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>app.view.style.width = `${CONFIG.width * scale}px`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>app.view.style.height = `${CONFIG.height * scale}px`;</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">async function loadAssets() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bar = document.getElementById('loaderBar');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const text = document.getElementById('loaderText');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const assetList = Object.entries(ASSETS);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>for (let i = 0; i &lt; assetList.length; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const [name, url] = assetList[i];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>text.textContent = `Chargement: ${name}...`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>bar.style.width = `${((i + 1) / assetList.length) * 100}%`;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>try {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>textures[name] = await PIXI.Assets.load(url);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>} catch(e) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>console.warn(`Failed to load ${name}:`, e);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Découper les produits (grille 2x2)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (textures.products) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const base = textures.products.baseTexture;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const pw = base.width / 2, ph = base.height / 2;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const padding = 0.12; // 12% padding</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>for (const [key, data] of Object.entries(PRODUCTS)) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const rect = new PIXI.Rectangle(</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>data.col * pw + pw * padding,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>data.row * ph + ph * padding,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>pw * (1 - padding * 2),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>ph * (1 - padding * 2)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>textures[`product_${key}`] = new PIXI.Texture(base, rect);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Découper les effets (4 lignes x 8 colonnes)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (textures.effects) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const base = textures.effects.baseTexture;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const cols = 8, rows = 4;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const fw = base.width / cols, fh = base.height / rows;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>textures.smokeFrames = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>textures.sparkleFrames = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>textures.coinFrames = [];</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>for (let i = 0; i &lt; cols; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>textures.smokeFrames.push(new PIXI.Texture(base, new PIXI.Rectangle(i * fw, 0, fw, fh)));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>textures.sparkleFrames.push(new PIXI.Texture(base, new PIXI.Rectangle(i * fw, fh, fw, fh)));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>textures.coinFrames.push(new PIXI.Texture(base, new PIXI.Rectangle(i * fw, fh * 2, fw, fh)));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Découper les clients (estimation 8 personnages en ligne)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (textures.customers) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const base = textures.customers.baseTexture;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const numCustomers = 8;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const cw = base.width / numCustomers;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>textures.customerSprites = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>for (let i = 0; i &lt; numCustomers; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>textures.customerSprites.push(</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>new PIXI.Texture(base, new PIXI.Rectangle(i * cw, 0, cw, base.height))</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>text.textContent = 'Prêt !';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>await delay(300);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function delay(ms) { return new Promise(r =&gt; setTimeout(r, ms)); }</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p1"><span class="s1">// ÉCRAN MENU</span></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function showMenu() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.screen = 'menu';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>app.stage.removeChildren();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>menuContainer = new PIXI.Container();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Fond</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.beginFill(0xFEF3E2);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.drawRect(0, 0, CONFIG.width, CONFIG.height);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.endFill();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>menuContainer.addChild(bg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Dégradé décoratif</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const grad = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>grad.beginFill(0xF5AF19, 0.15);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>grad.drawRect(0, 0, CONFIG.width, 180);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>grad.endFill();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>menuContainer.addChild(grad);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Logo/Titre</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const logoBg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>logoBg.beginFill(0xB8860B);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>logoBg.lineStyle(4, 0x8B6914);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>logoBg.drawRoundedRect(CONFIG.width/2 - 150, 25, 300, 90, 20);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>menuContainer.addChild(logoBg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const title1 = createText('COOKING', { fontSize: 26, fill: 0xFFF8E7, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>title1.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>title1.position.set(CONFIG.width/2, 52);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>menuContainer.addChild(title1);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const title2 = createText('BAKERY 🥐', { fontSize: 34, fill: 0xFFFFFF, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>title2.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>title2.position.set(CONFIG.width/2, 88);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>menuContainer.addChild(title2);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Affichage pièces</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const coinBg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>coinBg.beginFill(0xFFD700);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>coinBg.lineStyle(2, 0xDAA520);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>coinBg.drawRoundedRect(CONFIG.width/2 - 55, 125, 110, 38, 19);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>menuContainer.addChild(coinBg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const coinText = createText(`🪙 ${gameState.coins}`, { fontSize: 22, fill: 0x8B4513, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>coinText.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>coinText.position.set(CONFIG.width/2, 144);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>menuContainer.addChild(coinText);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Liste des niveaux</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>LEVELS.forEach((lvl, i) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const y = 185 + i * 72;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const btn = createLevelButton(lvl, i, y);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>menuContainer.addChild(btn);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Bouton Premium</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const premiumBtn = createPremiumButton();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>premiumBtn.position.set(CONFIG.width/2, 630);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>menuContainer.addChild(premiumBtn);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Mini déco en bas</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (textures.products) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const deco = new PIXI.Sprite(textures.products);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>deco.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>deco.width = 200;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>deco.height = 100;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>deco.position.set(CONFIG.width/2, 700);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>deco.alpha = 0.3;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>menuContainer.addChild(deco);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>app.stage.addChild(menuContainer);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function createLevelButton(lvl, index, y) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const btn = new PIXI.Container();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.position.set(CONFIG.width/2, y);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.eventMode = 'static';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.cursor = lvl.locked ? 'not-allowed' : 'pointer';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Fond</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.beginFill(lvl.locked ? 0xD1D5DB : 0xFFFFFF);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.lineStyle(3, lvl.locked ? 0xAAAAAA : 0xE8A849);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.drawRoundedRect(-185, -28, 370, 56, 16);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(bg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Numéro</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const numBg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>numBg.beginFill(lvl.locked ? 0x9CA3AF : 0xF59E0B);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>numBg.drawRoundedRect(-170, -20, 48, 40, 10);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(numBg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const num = createText(lvl.locked ? '🔒' : `${lvl.level}`, {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fontSize: lvl.locked ? 22 : 26,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fill: 0xFFFFFF,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fontWeight: 'bold'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>num.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>num.position.set(-146, 0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(num);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Nom + info</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const name = createText(lvl.name, { fontSize: 17, fill: lvl.locked ? 0x9CA3AF : 0x333333, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>name.anchor.set(0, 0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>name.position.set(-110, -7);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(name);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const info = createText(`${lvl.customers} clients • Objectif: ${lvl.goal}`, { fontSize: 11, fill: 0x888888 });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>info.anchor.set(0, 0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>info.position.set(-110, 12);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(info);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Étoiles</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>for (let s = 0; s &lt; 3; s++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const star = createText(gameState.stars[index] &gt; s ? '⭐' : '☆', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>fontSize: 18,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>fill: gameState.stars[index] &gt; s ? 0xFFD700 : 0xCCCCCC</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>star.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>star.position.set(115 + s * 28, 0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.addChild(star);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Interaction</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!lvl.locked) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.on('pointerdown', () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>animatePress(btn, () =&gt; startGame(index));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.on('pointerover', () =&gt; { btn.scale.set(1.02); });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.on('pointerout', () =&gt; { btn.scale.set(1); });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return btn;</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function createPremiumButton() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const btn = new PIXI.Container();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.eventMode = 'static';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.cursor = 'pointer';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.beginFill(0x8B5CF6);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.lineStyle(3, 0x7C3AED);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.drawRoundedRect(-185, -28, 370, 56, 16);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(bg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const text = createText('🔓 Tout Débloquer', { fontSize: 18, fill: 0xFFFFFF, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>text.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>text.position.set(-30, 0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(text);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const price = createText('1€', { fontSize: 24, fill: 0xFFFFFF, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>price.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>price.position.set(130, 0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(price);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.on('pointerdown', () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>animatePress(btn, () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Ici intégrer Stripe</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>alert('💳 Intégration Stripe à ajouter !\n\nPour débloquer, ajoutez Stripe Checkout.');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return btn;</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p1"><span class="s1">// ÉCRAN DE JEU</span></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function startGame(levelIndex) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.screen = 'playing';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.level = levelIndex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.score = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.served = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.missed = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.combo = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.customers = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.preparing = null;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.prepProgress = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.ready = null;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.spawned = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>productButtons = [];</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>app.stage.removeChildren();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameContainer = new PIXI.Container();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// === BACKGROUND ISOMÉTRIQUE ===</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (textures.background) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const bg = new PIXI.Sprite(textures.background);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>bg.anchor.set(0.5, 0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>bg.position.set(CONFIG.width / 2, 60);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Scale pour remplir la largeur</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const scale = CONFIG.width / bg.texture.width * 1.15;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>bg.scale.set(scale);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>gameContainer.addChild(bg);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Fallback</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const bg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>bg.beginFill(0xFEF3E2);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>bg.drawRect(0, 0, CONFIG.width, CONFIG.height);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>gameContainer.addChild(bg);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// === HEADER UI ===</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const header = createGameHeader();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameContainer.addChild(header);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// === ZONE CLIENTS (isométrique) ===</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>customersContainer = new PIXI.Container();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>customersContainer.position.set(0, 0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>customersContainer.sortableChildren = true; // Z-index dynamique !</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameContainer.addChild(customersContainer);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// === ZONE EFFETS ===</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>effectsContainer = new PIXI.Container();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameContainer.addChild(effectsContainer);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// === ZONE PRÉPARATION ===</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const prepZone = createPrepZone();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameContainer.addChild(prepZone);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>app.stage.addChild(gameContainer);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Démarrer spawn</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setTimeout(spawnCustomer, 800);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function createGameHeader() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const header = new PIXI.Container();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Fond semi-transparent</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.beginFill(0xB8860B, 0.95);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.drawRect(0, 0, CONFIG.width, 60);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>header.addChild(bg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Bouton retour</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const backBtn = new PIXI.Container();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>backBtn.position.set(30, 30);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>backBtn.eventMode = 'static';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>backBtn.cursor = 'pointer';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const backBg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>backBg.beginFill(0xFFFFFF, 0.2);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>backBg.drawRoundedRect(-20, -18, 40, 36, 10);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>backBtn.addChild(backBg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const backIcon = createText('←', { fontSize: 26, fill: 0xFFFFFF });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>backIcon.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>backBtn.addChild(backIcon);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>backBtn.on('pointerdown', () =&gt; showMenu());</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>header.addChild(backBtn);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Titre niveau</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const lvl = LEVELS[gameState.level];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const title = createText(lvl.name, { fontSize: 18, fill: 0xFFFFFF, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>title.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>title.position.set(CONFIG.width/2, 20);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>header.addChild(title);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Score</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const scoreLabel = createText('0', { fontSize: 28, fill: 0xFFFFFF, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>scoreLabel.anchor.set(1, 0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>scoreLabel.position.set(CONFIG.width - 20, 20);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>scoreLabel.name = 'scoreLabel';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>header.addChild(scoreLabel);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Info clients</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const clientInfo = createText(`0/${lvl.customers}`, { fontSize: 12, fill: 0xFFF8E7 });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>clientInfo.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>clientInfo.position.set(CONFIG.width/2, 42);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>clientInfo.name = 'clientInfo';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>header.addChild(clientInfo);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Barre objectif</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const progressBg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>progressBg.beginFill(0xFFFFFF, 0.3);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>progressBg.drawRoundedRect(15, 52, CONFIG.width - 30, 6, 3);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>header.addChild(progressBg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const progressBar = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>progressBar.name = 'progressBar';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>header.addChild(progressBar);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>header.name = 'header';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return header;</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function createPrepZone() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const zone = new PIXI.Container();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>zone.position.set(0, CONFIG.height - 180);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Fond</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.beginFill(0x3D3D3D);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.drawRoundedRect(0, 0, CONFIG.width, 180, 25);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.beginFill(0x4A4A4A);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.drawRoundedRect(0, 0, CONFIG.width, 20, 25);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>zone.addChild(bg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Status</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const status = createText('👆 Sélectionne un produit', { fontSize: 14, fill: 0xAAAAAA });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>status.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>status.position.set(CONFIG.width/2, 35);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>status.name = 'status';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>zone.addChild(status);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Boutons produits</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const lvl = LEVELS[gameState.level];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const prods = lvl.products;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const btnW = 80, gap = 12;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const totalW = prods.length * btnW + (prods.length - 1) * gap;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const startX = (CONFIG.width - totalW) / 2;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>prods.forEach((pid, i) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const btn = createProductButton(pid, i);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.position.set(startX + i * (btnW + gap) + btnW/2, 110);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>zone.addChild(btn);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>productButtons.push({ container: btn, id: pid });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>zone.name = 'prepZone';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return zone;</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function createProductButton(productId, index) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const data = PRODUCTS[productId];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const btn = new PIXI.Container();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.eventMode = 'static';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.cursor = 'pointer';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.name = productId;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Fond</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.beginFill(0xFFFFFF);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.lineStyle(3, 0xE8A849);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.drawRoundedRect(-38, -55, 76, 110, 15);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.name = 'bg';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(bg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Sprite produit</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const tex = textures[`product_${productId}`];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (tex) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const sprite = new PIXI.Sprite(tex);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sprite.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sprite.width = 55;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sprite.height = 55;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sprite.y = -15;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.addChild(sprite);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Nom</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const name = createText(data.name, { fontSize: 10, fill: 0x333333, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>name.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>name.y = 25;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(name);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Points</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const pts = createText(`+${data.points}`, { fontSize: 11, fill: 0xF59E0B, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>pts.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>pts.y = 40;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(pts);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Progress cercle (caché)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const progress = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>progress.name = 'progress';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>progress.visible = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(progress);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Badge prêt (caché)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const badge = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>badge.beginFill(0x22C55E);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>badge.lineStyle(2, 0xFFFFFF);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>badge.drawCircle(28, -45, 14);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>badge.name = 'badge';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>badge.visible = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(badge);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const check = createText('✓', { fontSize: 16, fill: 0xFFFFFF, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>check.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>check.position.set(28, -45);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>check.name = 'check';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>check.visible = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(check);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.on('pointerdown', () =&gt; onProductClick(productId));</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return btn;</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function onProductClick(productId) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (gameState.preparing &amp;&amp; gameState.preparing !== productId) return;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (gameState.ready === productId) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>serveCustomer(productId);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>} else if (!gameState.preparing) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>startPreparation(productId);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function startPreparation(productId) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.preparing = productId;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.prepProgress = 0;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Update status</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const prepZone = gameContainer.getChildByName('prepZone');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const status = prepZone.getChildByName('status');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>status.text = '⏳ Cuisson en cours...';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>status.style.fill = 0xFBBF24;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Highlight bouton</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const btn = productButtons.find(b =&gt; b.id === productId);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (btn) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.container.getChildByName('bg').tint = 0xFFF3CD;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Ajouter fumée sur le décor</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>spawnSmoke();</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function completePreparation() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const productId = gameState.preparing;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.ready = productId;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.preparing = null;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.prepProgress = 0;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Update status</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const prepZone = gameContainer.getChildByName('prepZone');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const status = prepZone.getChildByName('status');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>status.text = '✓ PRÊT ! Clique pour servir';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>status.style.fill = 0x22C55E;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Show badge</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const btn = productButtons.find(b =&gt; b.id === productId);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (btn) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.container.getChildByName('bg').tint = 0xBBFFBB;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.container.getChildByName('badge').visible = true;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.container.getChildByName('check').visible = true;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function serveCustomer(productId) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const idx = gameState.customers.findIndex(c =&gt; c.order === productId &amp;&amp; !c.served);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (idx !== -1) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const customer = gameState.customers[idx];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const data = PRODUCTS[productId];</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Points</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const bonus = Math.floor(customer.patience / 4);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const comboBonus = gameState.combo * 10;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const total = data.points + bonus + comboBonus;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>gameState.score += total;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>gameState.served++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>gameState.combo++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>customer.served = true;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Effets</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>spawnFloatingText(`+${total}`, customer.sprite.x, customer.sprite.y - 50, 0x22C55E);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>spawnSparkle(customer.sprite.x, customer.sprite.y - 30);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>spawnCoins(customer.sprite.x, customer.sprite.y);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (gameState.combo &gt;= 3) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>showComboText();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Animation sortie client</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>animateCustomerLeave(customer);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>updateUI();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Reset bouton</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.ready = null;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const btn = productButtons.find(b =&gt; b.id === productId);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (btn) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.container.getChildByName('bg').tint = 0xFFFFFF;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.container.getChildByName('badge').visible = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>btn.container.getChildByName('check').visible = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Reset status</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const prepZone = gameContainer.getChildByName('prepZone');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const status = prepZone.getChildByName('status');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>status.text = '👆 Sélectionne un produit';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>status.style.fill = 0xAAAAAA;</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p1"><span class="s1">// CLIENTS</span></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function spawnCustomer() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (gameState.screen !== 'playing') return;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const lvl = LEVELS[gameState.level];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (gameState.spawned &gt;= lvl.customers) return;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const activeCount = gameState.customers.filter(c =&gt; !c.served).length;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (activeCount &gt;= lvl.maxQueue) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>setTimeout(spawnCustomer, 500);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>return;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Choisir produit aléatoire</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const prods = lvl.products;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const order = prods[Math.floor(Math.random() * prods.length)];</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Type visuel</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const type = Math.floor(Math.random() * (textures.customerSprites?.length || 1));</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Position isométrique</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const queueIndex = activeCount;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const startX = CONFIG.width + 80;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const targetX = 280 - queueIndex * 50; // File d'attente isométrique</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const targetY = 350 + queueIndex * 25; // Plus bas = plus proche</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const customer = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>id: Date.now(),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>order,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>patience: 100,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>served: false,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>type,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sprite: null</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>};</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Créer sprite</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const sprite = createCustomerSprite(customer, type);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>sprite.x = startX;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>sprite.y = targetY;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>sprite.zIndex = Math.floor(targetY); // Z-index dynamique</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>customer.sprite = sprite;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>customersContainer.addChild(sprite);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.customers.push(customer);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.spawned++;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Animation entrée</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>animateCustomerEnter(sprite, targetX, targetY);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Prochain client</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setTimeout(spawnCustomer, lvl.speed);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function createCustomerSprite(customer, type) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const container = new PIXI.Container();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Sprite personnage</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const tex = textures.customerSprites?.[type] || null;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (tex) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const sprite = new PIXI.Sprite(tex);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sprite.anchor.set(0.5, 1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sprite.scale.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>container.addChild(sprite);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Fallback cercle</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const placeholder = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>placeholder.beginFill(0x4A90D9);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>placeholder.drawCircle(0, -30, 25);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>placeholder.beginFill(0xFFCCB3);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>placeholder.drawCircle(0, -50, 15);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>container.addChild(placeholder);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Bulle commande</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bubble = new PIXI.Container();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bubble.position.set(0, -100);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bubbleBg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bubbleBg.beginFill(0xFFFFFF);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bubbleBg.lineStyle(2, 0xE8A849);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bubbleBg.drawRoundedRect(-28, -28, 56, 56, 12);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bubble.addChild(bubbleBg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Triangle bulle</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const tri = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>tri.beginFill(0xFFFFFF);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>tri.lineStyle(2, 0xE8A849);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>tri.moveTo(-8, 26);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>tri.lineTo(0, 38);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>tri.lineTo(8, 26);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bubble.addChild(tri);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Produit dans bulle</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const prodTex = textures[`product_${customer.order}`];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (prodTex) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const prodSprite = new PIXI.Sprite(prodTex);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>prodSprite.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>prodSprite.width = 40;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>prodSprite.height = 40;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>bubble.addChild(prodSprite);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>container.addChild(bubble);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>container.bubble = bubble;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Barre patience</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const barBg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>barBg.beginFill(0x333333);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>barBg.drawRoundedRect(-25, 5, 50, 8, 4);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>container.addChild(barBg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const barFill = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>barFill.name = 'patienceBar';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>container.addChild(barFill);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return container;</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function animateCustomerEnter(sprite, targetX, targetY) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const startX = sprite.x;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const duration = 600;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const startTime = Date.now();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const animate = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const elapsed = Date.now() - startTime;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const t = Math.min(elapsed / duration, 1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const ease = 1 - Math.pow(1 - t, 3);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sprite.x = startX + (targetX - startX) * ease;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sprite.y = targetY - Math.sin(t * Math.PI) * 15;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (t &lt; 1) requestAnimationFrame(animate);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>animate();</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function animateCustomerLeave(customer) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const sprite = customer.sprite;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const duration = 400;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const startTime = Date.now();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const startX = sprite.x;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const animate = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const elapsed = Date.now() - startTime;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const t = Math.min(elapsed / duration, 1);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sprite.x = startX - 100 * t;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sprite.alpha = 1 - t;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>sprite.scale.set(1 - t * 0.3);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (t &lt; 1) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>requestAnimationFrame(animate);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>customersContainer.removeChild(sprite);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>repositionQueue();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>animate();</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function repositionQueue() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const active = gameState.customers.filter(c =&gt; !c.served);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>active.forEach((c, i) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const targetX = 280 - i * 50;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const targetY = 350 + i * 25;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (c.sprite) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const startX = c.sprite.x, startY = c.sprite.y;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const duration = 300;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const startTime = Date.now();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const animate = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const t = Math.min((Date.now() - startTime) / duration, 1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>c.sprite.x = startX + (targetX - startX) * t;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>c.sprite.y = startY + (targetY - startY) * t;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>c.sprite.zIndex = Math.floor(c.sprite.y);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (t &lt; 1) requestAnimationFrame(animate);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>animate();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p1"><span class="s1">// EFFETS VISUELS</span></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function spawnSmoke() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!textures.smokeFrames?.length) return;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const smoke = new PIXI.AnimatedSprite(textures.smokeFrames);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>smoke.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>smoke.position.set(320, 250); // Position du four</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>smoke.scale.set(0.4);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>smoke.animationSpeed = 0.15;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>smoke.loop = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>smoke.play();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>smoke.onComplete = () =&gt; effectsContainer.removeChild(smoke);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>effectsContainer.addChild(smoke);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function spawnSparkle(x, y) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!textures.sparkleFrames?.length) return;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const sparkle = new PIXI.AnimatedSprite(textures.sparkleFrames);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>sparkle.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>sparkle.position.set(x, y);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>sparkle.scale.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>sparkle.animationSpeed = 0.2;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>sparkle.loop = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>sparkle.play();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>sparkle.onComplete = () =&gt; effectsContainer.removeChild(sparkle);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>effectsContainer.addChild(sparkle);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function spawnCoins(x, y) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!textures.coinFrames?.length) return;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>for (let i = 0; i &lt; 3; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>setTimeout(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const coin = new PIXI.AnimatedSprite(textures.coinFrames);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>coin.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>coin.position.set(x + (Math.random() - 0.5) * 40, y);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>coin.scale.set(0.3);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>coin.animationSpeed = 0.3;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>coin.play();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>effectsContainer.addChild(coin);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Animation montée</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const startY = coin.y;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const duration = 800;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const startTime = Date.now();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const animate = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const t = Math.min((Date.now() - startTime) / duration, 1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>coin.y = startY - 80 * t;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>coin.alpha = 1 - t * 0.8;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (t &lt; 1) requestAnimationFrame(animate);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>else effectsContainer.removeChild(coin);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>animate();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}, i * 100);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function spawnFloatingText(text, x, y, color) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const txt = createText(text, {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fontSize: 30,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fill: color,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fontWeight: 'bold',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>stroke: 0xFFFFFF,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>strokeThickness: 4</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>txt.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>txt.position.set(x, y);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>effectsContainer.addChild(txt);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const startY = y;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const duration = 1000;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const startTime = Date.now();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const animate = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const t = Math.min((Date.now() - startTime) / duration, 1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>txt.y = startY - 60 * t;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>txt.alpha = 1 - t;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>txt.scale.set(1 + t * 0.3);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (t &lt; 1) requestAnimationFrame(animate);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>else effectsContainer.removeChild(txt);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>animate();</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function showComboText() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const combo = createText(`🔥 COMBO x${gameState.combo}!`, {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fontSize: 28,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fill: 0xFF6B35,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fontWeight: 'bold',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>stroke: 0xFFFFFF,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>strokeThickness: 5</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>combo.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>combo.position.set(CONFIG.width/2, 150);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>effectsContainer.addChild(combo);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const duration = 1200;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const startTime = Date.now();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const animate = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const t = Math.min((Date.now() - startTime) / duration, 1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>combo.scale.set(1 + Math.sin(t * Math.PI * 4) * 0.1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (t &gt; 0.7) combo.alpha = 1 - (t - 0.7) / 0.3;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (t &lt; 1) requestAnimationFrame(animate);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>else effectsContainer.removeChild(combo);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>animate();</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p1"><span class="s1">// GAME LOOP</span></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function gameLoop(delta) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (gameState.screen !== 'playing') return;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const lvl = LEVELS[gameState.level];</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Update patience</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.customers.forEach(c =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (c.served) return;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>c.patience -= 0.12 * delta;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Update barre</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (c.sprite) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const bar = c.sprite.getChildByName('patienceBar');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (bar) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>bar.clear();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const color = c.patience &gt; 60 ? 0x22C55E : c.patience &gt; 30 ? 0xFBBF24 : 0xEF4444;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>bar.beginFill(color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>bar.drawRoundedRect(-25, 5, (c.patience / 100) * 50, 8, 4);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Shake si impatient</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (c.patience &lt; 25 &amp;&amp; c.sprite.bubble) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>c.sprite.bubble.x = Math.sin(Date.now() / 50) * 3;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Client perdu</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (c.patience &lt;= 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>c.served = true;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>gameState.missed++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>gameState.combo = 0;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>spawnFloatingText('😠', c.sprite.x, c.sprite.y - 60, 0xEF4444);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (c.sprite) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const sprite = c.sprite;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const duration = 500;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const startTime = Date.now();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const animate = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const t = Math.min((Date.now() - startTime) / duration, 1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>sprite.alpha = 1 - t;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>sprite.y -= 2;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (t &lt; 1) requestAnimationFrame(animate);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>customersContainer.removeChild(sprite);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>repositionQueue();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>animate();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>updateUI();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Update préparation</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (gameState.preparing) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const data = PRODUCTS[gameState.preparing];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>gameState.prepProgress += (delta * 16) / data.time;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Update cercle progress</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const btn = productButtons.find(b =&gt; b.id === gameState.preparing);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (btn) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const prog = btn.container.getChildByName('progress');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>prog.visible = true;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>prog.clear();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>prog.lineStyle(4, 0xF59E0B);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>prog.arc(0, -15, 35, -Math.PI/2, -Math.PI/2 + Math.PI * 2 * gameState.prepProgress);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (gameState.prepProgress &gt;= 1) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Hide progress</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (btn) btn.container.getChildByName('progress').visible = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>completePreparation();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Check fin niveau</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (gameState.served + gameState.missed &gt;= lvl.customers) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>endGame();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function updateUI() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const header = gameContainer.getChildByName('header');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!header) return;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const lvl = LEVELS[gameState.level];</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Score</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const score = header.getChildByName('scoreLabel');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (score) score.text = gameState.score.toString();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Info clients</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const info = header.getChildByName('clientInfo');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (info) info.text = `${gameState.served}/${lvl.customers}`;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Barre progression</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bar = header.getChildByName('progressBar');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (bar) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const progress = Math.min(gameState.score / lvl.goal, 1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>bar.clear();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>bar.beginFill(progress &gt;= 1 ? 0x22C55E : 0x60A5FA);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>bar.drawRoundedRect(15, 52, (CONFIG.width - 30) * progress, 6, 3);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p1"><span class="s1">// RÉSULTAT</span></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function endGame() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.screen = 'result';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const lvl = LEVELS[gameState.level];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const stars = gameState.missed === 0 ? 3 : gameState.missed &lt;= 2 ? 2 : gameState.missed &lt;= 3 ? 1 : 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const success = stars &gt;= 1 &amp;&amp; gameState.score &gt;= lvl.goal;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.stars[gameState.level] = Math.max(gameState.stars[gameState.level], stars);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const earned = Math.floor(gameState.score / 8) + stars * 15;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>gameState.coins += earned;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setTimeout(() =&gt; showResult(success, stars, earned), 600);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function showResult(success, stars, earned) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>app.stage.removeChildren();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>resultContainer = new PIXI.Container();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Fond</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.beginFill(success ? 0xF0FDF4 : 0xFEF2F2);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.drawRect(0, 0, CONFIG.width, CONFIG.height);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>resultContainer.addChild(bg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Icône</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const icon = createText(success ? '🎉' : '😅', { fontSize: 80 });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>icon.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>icon.position.set(CONFIG.width/2, 120);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>resultContainer.addChild(icon);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Titre</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const title = createText(success ? 'Bravo Boulanger !' : 'Réessaie !', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fontSize: 32, fill: success ? 0x22C55E : 0xEF4444, fontWeight: 'bold'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>title.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>title.position.set(CONFIG.width/2, 200);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>resultContainer.addChild(title);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Étoiles</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>for (let i = 0; i &lt; 3; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const star = createText(i &lt; stars ? '⭐' : '☆', { fontSize: 50, fill: i &lt; stars ? 0xFFD700 : 0xCCCCCC });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>star.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>star.position.set(CONFIG.width/2 - 70 + i * 70, 270);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>resultContainer.addChild(star);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Animation</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (i &lt; stars) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>star.scale.set(0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const animate = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>star.scale.x += 0.1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>star.scale.y += 0.1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (star.scale.x &lt; 1) requestAnimationFrame(animate);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>else star.scale.set(1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>animate();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}, i * 200);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Stats</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const lvl = LEVELS[gameState.level];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const statsBox = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>statsBox.beginFill(0xFFFFFF);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>statsBox.lineStyle(2, 0xE5E7EB);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>statsBox.drawRoundedRect(CONFIG.width/2 - 150, 320, 300, 140, 15);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>resultContainer.addChild(statsBox);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const stats = [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>[`Score`, `${gameState.score} / ${lvl.goal}`],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>[`Servis`, `${gameState.served} ✓`],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>[`Perdus`, `${gameState.missed} ✗`],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>[`Pièces`, `+${earned} 🪙`]</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>];</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>stats.forEach(([label, value], i) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const lbl = createText(label, { fontSize: 16, fill: 0x888888 });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>lbl.anchor.set(0, 0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>lbl.position.set(CONFIG.width/2 - 130, 350 + i * 28);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>resultContainer.addChild(lbl);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const val = createText(value, { fontSize: 16, fill: 0x333333, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>val.anchor.set(1, 0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>val.position.set(CONFIG.width/2 + 130, 350 + i * 28);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>resultContainer.addChild(val);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// Boutons</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const replayBtn = createActionButton('Rejouer 🔄', 0xF59E0B, () =&gt; startGame(gameState.level));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>replayBtn.position.set(CONFIG.width/2, 500);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>resultContainer.addChild(replayBtn);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (success &amp;&amp; gameState.level &lt; LEVELS.length - 1 &amp;&amp; !LEVELS[gameState.level + 1].locked) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const nextBtn = createActionButton('Niveau suivant →', 0x22C55E, () =&gt; startGame(gameState.level + 1));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>nextBtn.position.set(CONFIG.width/2, 565);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>resultContainer.addChild(nextBtn);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const menuBtn = createActionButton('Menu', 0x6B7280, showMenu);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>menuBtn.position.set(CONFIG.width/2, success &amp;&amp; gameState.level &lt; 5 ? 630 : 565);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>resultContainer.addChild(menuBtn);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>app.stage.addChild(resultContainer);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function createActionButton(label, color, onClick) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const btn = new PIXI.Container();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.eventMode = 'static';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.cursor = 'pointer';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bg = new PIXI.Graphics();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.beginFill(color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>bg.drawRoundedRect(-150, -28, 300, 56, 15);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(bg);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const text = createText(label, { fontSize: 20, fill: 0xFFFFFF, fontWeight: 'bold' });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>text.anchor.set(0.5);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.addChild(text);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.on('pointerdown', () =&gt; animatePress(btn, onClick));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.on('pointerover', () =&gt; btn.scale.set(1.03));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.on('pointerout', () =&gt; btn.scale.set(1));</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return btn;</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p1"><span class="s1">// UTILITAIRES</span></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function createText(content, style) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const defaultStyle = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fontFamily: 'Segoe UI, system-ui, sans-serif',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fontSize: 16,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>fill: 0x333333</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return new PIXI.Text(content, { ...defaultStyle, ...style });</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">function animatePress(obj, callback) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>obj.scale.set(0.95);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setTimeout(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>obj.scale.set(1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>callback();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}, 100);</span></p>
+<p class="p1"><span class="s1">}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p1"><span class="s1">// LANCEMENT</span></p>
+<p class="p1"><span class="s1">// ================================================================</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">window.addEventListener('load', init);</span></p>
+<p class="p1"><span class="s1">&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+</body>
+</html>
